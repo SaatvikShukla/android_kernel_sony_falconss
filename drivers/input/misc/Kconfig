@@ -714,4 +714,13 @@ config SENSORS_CAPELLA_CM36283
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called CM36283.
+
+# << FerryWu, 2013/08/27, support forcing crash by long pressing power key */
+config INPUT_FORCE_CRASH
+       tristate "FORCE CRASH"
+       default y
+       help
+         This option enables forcing crash by long pressing power key.
+# >> FerryWu, 2013/08/27, support forcing crash by long pressing power key */
+
 endif
