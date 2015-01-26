@@ -73,3 +73,7 @@ obj-$(CONFIG_QPNP_MISC) += qpnp-misc.o
 # /*++ Huize - 20140213 Add for magnetic sensor ++*/
 obj-$(CONFIG_SENSORS_AK8963)	+= akm8963.o
 # /*-- Huize - 20140213 Add for magnetic sensor --*/
+# + murphy 2013.07.19
+# Added enabling for GPS eLNA driver
+obj-$(CONFIG_ARIMA_GPS_ELNA) += gps_elna.o
+# - murphy 2011.07.19
