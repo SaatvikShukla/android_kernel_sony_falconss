@@ -69,6 +69,9 @@ obj-$(CONFIG_SENSORS_CAPELLA_CM36283)	+= cm36283.o
 # /*++ Huize - 20140213 Accelerometer sensor ++*/
 obj-$(CONFIG_INPUT_BMA250E)		+= bma250e.o
 # /*-- Huize - 20140213 Accelerometer sensor--*/
+# /*++ Huize - 20140213 Proximity/Light sensor ++*/
+obj-$(CONFIG_INPUT_EPL6881)		+= epl6881.o
+# /*-- Huize - 20140213 Proximity/Light sensor --*/
 # << FerryWu, 2013/08/27, support forcing crash by long pressing power key */
 obj-$(CONFIG_INPUT_FORCE_CRASH)		+= force_crash.o
 # >> FerryWu, 2013/08/27, support forcing crash by long pressing power key */
