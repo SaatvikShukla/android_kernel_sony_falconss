@@ -77,3 +77,6 @@ obj-$(CONFIG_SENSORS_AK8963)	+= akm8963.o
 # Added enabling for GPS eLNA driver
 obj-$(CONFIG_ARIMA_GPS_ELNA) += gps_elna.o
 # - murphy 2011.07.19
+# /*++ Huize - 20140213 Add for processing package event ++*/
+obj-y				+= postoffice.o
+# /*-- Huize - 20140213 Add for processing package event --*/
