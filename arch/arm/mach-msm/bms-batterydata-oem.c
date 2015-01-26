@@ -106,4 +106,8 @@ struct bms_battery_data oem_batt_data = {
 	.rbatt_sf_lut		= &rbatt_sf,
 	.default_rbatt_mohm	= 236,
 	.flat_ocv_threshold_uv	= 3800000,
+	//Arima Edison modify, since we have some trouble on cc ++
+	.max_voltage_uv	=	4200000,
+	.cutoff_uv		=	3400000,
+	//Arima Edison modify, since we have some trouble on cc --
 };
