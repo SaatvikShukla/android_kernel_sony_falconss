@@ -715,6 +715,15 @@ config SENSORS_CAPELLA_CM36283
 	  To compile this driver as a module, choose M here: the
 	  module will be called CM36283.
 
+# /*++ Huize - 20140213 Add for Accelerometer Sensor config ++*/
+config INPUT_BMA250E
+       tristate "BMA250E SENSOR"
+       default y
+       help
+         This option enables device driver support for the acclerometer sensor
+         on BOACH BMA250E chip.
+# /*-- Huize - 20140213 Add for Accelerometer Sensor config --*/
+
 # << FerryWu, 2013/08/27, support forcing crash by long pressing power key */
 config INPUT_FORCE_CRASH
        tristate "FORCE CRASH"

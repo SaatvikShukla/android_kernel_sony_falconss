@@ -66,6 +66,9 @@ obj-$(CONFIG_BMP18X_I2C)		+= bmp18x-i2c.o
 obj-$(CONFIG_SENSORS_MMA8X5X)	  	+= mma8x5x.o
 obj-$(CONFIG_SENSORS_STK3X1X)		+= stk3x1x.o
 obj-$(CONFIG_SENSORS_CAPELLA_CM36283)	+= cm36283.o
+# /*++ Huize - 20140213 Accelerometer sensor ++*/
+obj-$(CONFIG_INPUT_BMA250E)		+= bma250e.o
+# /*-- Huize - 20140213 Accelerometer sensor--*/
 # << FerryWu, 2013/08/27, support forcing crash by long pressing power key */
 obj-$(CONFIG_INPUT_FORCE_CRASH)		+= force_crash.o
 # >> FerryWu, 2013/08/27, support forcing crash by long pressing power key */
