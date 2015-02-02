@@ -55,24 +55,28 @@
 			compatible = "qcom,qpnp-charger";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			status = "disabled";
+			/* murphy 2014.01.03  KK merged  disabled to ok*/
+			status = "ok";
 
-			qcom,vddmax-mv = <4200>;
-			qcom,vddsafe-mv = <4230>;
-			qcom,vinmin-mv = <4300>;
-			qcom,vbatdet-mv = <4100>;
-			qcom,ibatmax-ma = <1500>;
+			qcom,vddmax-mv = <4220>;
+			qcom,vddsafe-mv = <4220>;
+			qcom,vinmin-mv = <4220>;
+			qcom,vbatdet-mv = <4110>;
+			qcom,ibatmax-ma = <1300>;
 			qcom,ibatterm-ma = <100>;
-			qcom,ibatsafe-ma = <1500>;
+			qcom,ibatsafe-ma = <1300>;
 			qcom,thermal-mitigation = <1500 700 600 325>;
 			qcom,vbatdet-delta-mv = <100>;
-			qcom,resume-soc = <99>;
+			qcom,resume-soc = <100>;/*Abner 0114--modify for High voltage cannot charge*/
 			qcom,tchg-mins = <150>;
 			qcom,chg-vadc = <&pm8110_vadc>;
 			qcom,chg-adc_tm = <&pm8110_adc_tm>;
+			qcom,tchg-mins-usb = <480>; /* Abner 0906--modify for safety timer*/
+			qcom,tchg-mins-wall = <240>;
 
 			qcom,chgr@1000 {
-				status = "disabled";
+			  /* murphy 2014.01.03  KK merged  disabled to ok*/
+				status = "ok";
 				reg = <0x1000 0x100>;
 				interrupts =	<0x0 0x10 0x0>,
 						<0x0 0x10 0x1>,
@@ -209,6 +213,17 @@
 			};
 		};
 
+/*[Arima Patch] 20130809 Add coin cell feature by Abner
+*/
+    qcom,coincell@2800 {
+        compatible = "qcom,qpnp-coincell";
+				reg = <0x2800 0x100>;
+				qcom,rset-ohms = <2100>;
+				qcom,vset-millivolts = <3200>;
+				qcom,charge-enable = <1>;
+    };
+/*[Arima Patch] 20130809 Add coin cell feature by Abner
+*/
 		pm8110_vadc: vadc@3100 {
 			compatible = "qcom,qpnp-vadc";
 			reg = <0x3100 0x100>;
@@ -317,10 +332,10 @@
 			status = "disabled";
 
 			qcom,r-sense-uohm = <10000>;
-			qcom,v-cutoff-uv = <3400000>;
-			qcom,max-voltage-uv = <4200000>;
+			qcom,v-cutoff-uv = <325000>;
+			qcom,max-voltage-uv = <4220000>;
 			qcom,r-conn-mohm = <0>;
-			qcom,shutdown-soc-valid-limit = <100>;
+			qcom,shutdown-soc-valid-limit = <20>;/* Abner 0228-Change battery capacity not change*/
 			qcom,adjust-soc-low-threshold = <15>;
 			qcom,ocv-voltage-high-threshold-uv = <3750000>;
 			qcom,ocv-voltage-low-threshold-uv = <3650000>;
@@ -329,7 +344,9 @@
 			qcom,low-soc-calculate-soc-ms = <5000>;
 			qcom,calculate-soc-ms = <20000>;
 			qcom,chg-term-ua = <100000>;
-			qcom,batt-type = <0>;
+			/*Arima add battery calibration 20130923  ++*/
+			qcom,batt-type = <6>;
+			/*Arima add battery calibration 20130923--*/
 			qcom,low-voltage-threshold = <3420000>;
 			qcom,tm-temp-margin = <5000>;
 			qcom,low-ocv-correction-limit-uv = <100>;
@@ -338,11 +355,11 @@
 			qcom,bms-vadc = <&pm8110_vadc>;
 			qcom,bms-iadc = <&pm8110_iadc>;
 			qcom,bms-adc_tm = <&pm8110_adc_tm>;
-
+			/* Abner 0228-Change battery capacity not change*/
 			qcom,batt-pres-status@1208 {
 				reg = <0x1208 0x1>;
 			};
-
+			/* Abner 0228-Change battery capacity not change*/
 			qcom,bms-iadc@3800 {
 				reg = <0x3800 0x100>;
 			};

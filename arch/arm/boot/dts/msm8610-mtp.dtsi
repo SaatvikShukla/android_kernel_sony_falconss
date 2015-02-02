@@ -91,6 +91,21 @@
 			synaptics,power-down;
 			synaptics,disable-gpios;
 		};
+
+		/* -- Arima added -- */
+		elan_ktf2k_ts@15{
+			compatible = "elan,ktf2k_ts";
+			reg = <0x15>;
+			interrupt-parent = <&msmgpio>;
+			interrupts = <1 0x2>;
+			vdd_ana-supply = <&pm8110_l19>;
+			vcc_i2c-supply = <&pm8110_l14>;
+			elan,reset-gpio = <&msmgpio 0 0x00>;
+			elan,irq-gpio = <&msmgpio 1 0x00>;
+			elan,hw-det-gpio = <&msmgpio 7 0x00>;
+			elan,i2c-pull-up;
+		};
+		/* -- Arima added -- */
 	};
 
 	i2c@f9925000 {
@@ -157,8 +172,50 @@
 			interrupts = <77 0>;
 			qcom,clk-gpio = <&pm8110_gpios 1 0>;
 		};
-	};
 
+		/*++ Huize - 20140213 Add for using QUP3 ++*/
+		bma250e@18 {
+			compatible = "accelerometer,bma250e";
+			reg = <0x18>;
+			vdd_ana-supply = <&pm8110_l19>;
+			vcc_i2c-supply = <&pm8110_l14>;
+		};
+		epl6881@49 {
+			compatible = "proximity,epl6811";
+			reg = <0x49>;
+			vdd_ana-supply = <&pm8110_l19>;
+			vcc_i2c-supply = <&pm8110_l14>;
+		};
+		akm8963@0D {
+			compatible = "magnetic,akm8963";
+			reg = <0x0D>;
+			vdd_ana-supply = <&pm8110_l19>;
+			vcc_i2c-supply = <&pm8110_l14>;
+		};
+		ti_lm3533_leds@36 {
+  			compatible = "ti,lm3533_leds";
+			reg = <0x36>;
+			ti,hwen-gpio = <&msmgpio 18 0x00>;
+		};
+		/*-- Huize - 20140213 Add for using QUP3 --*/
+	};
+	
+	/*Arima Edison add isdbt ++ */
+        nmi-isdbt{        
+        compatible = "nmi,nmi325_isdbt";       
+        };
+        
+        spi@f9926000 {
+                    nmi325@0{
+                            compatible = "nmi,nmispi"; 
+                            reg = <0>; 
+                            spi-max-frequency = <5000000>; 
+                            interrupt-parent = <&msmgpio>;
+			 interrupts = <0 90 0>;
+                    };
+        };
+       /*Arima Edison add isdbt --*/
+       
 	gen-vkeys {
 		compatible = "qcom,gen-vkeys";
 		label = "atmel_mxt_ts";
@@ -174,6 +231,7 @@
 		compatible = "gpio-keys";
 		input-name = "gpio-keys";
 
+		/* -- Arima removed
 		camera_snapshot {
 			label = "camera_snapshot";
 			gpios = <&msmgpio 73 0x1>;
@@ -191,6 +249,7 @@
 			gpio-key,wakeup;
 			debounce-interval = <15>;
 		};
+		-- */
 
 		vol_up {
 			label = "volume_up";
@@ -200,6 +259,26 @@
 			gpio-key,wakeup;
 			debounce-interval = <15>;
 		};
+
+		/* -- Arima added -- */
+		vol_down {
+			label = "volume_down";
+			gpios = <&msmgpio 73 0x1>;
+			linux,input-type = <1>;
+			linux,code = <114>;
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};
+		
+		mp3 {
+			label = "mp3";
+			gpios = <&msmgpio 74 0x1>;
+			linux,input-type = <1>;
+			linux,code = <0x187>;
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};
+		/* -- Arima added -- */
 	};
 
     sound {
@@ -207,12 +286,35 @@
             "RX_BIAS", "MCLK",
             "INT_LDO_H", "MCLK",
             "MIC BIAS External", "Handset Mic",
-            "MIC BIAS Internal2", "Headset Mic",
+            "MIC BIAS External", "Headset Mic", /* Kevin Shiu button detect with external bias1 */
             "MIC BIAS External", "Secondary Mic",
             "AMIC1", "MIC BIAS External",
-            "AMIC2", "MIC BIAS Internal2",
+            "AMIC2", "MIC BIAS External", /* Kevin Shiu button detect with external bias */
             "AMIC3", "MIC BIAS External";
     };
+
+/* 20131018 tracy add for fix white screen when power on in 1030 SW ++*/
+	qcom,mdss_dsi_truly_wvga_video {
+		qcom,cont-splash-enabled;
+	};
+	qcom,mdss_dsi_hx8379a_wvga_video{
+		qcom,cont-splash-enabled;
+	};
+/*tracy add for adc display*/
+	qcom,mdss_dsi_otm8018b_fwvga_video{
+		qcom,cont-splash-enabled;
+	};
+/*tracy add for adc display*/
+/* 20131018 tracy add for fix white screen when power on in 1030 SW --*/
+
+    /*-- murphy 2013.07.19 --*/
+    gps_elna {
+		compatible = "arima,gps_elna";
+		elna,enable-gpio = <&msmgpio 63 0x00>;
+		vcc_elna_l16-supply = <&pm8110_l16>;
+		vcc_elna_l19-supply = <&pm8110_l19>;
+    };
+    /*-- murphy 2013.07.19 --*/
 };
 
 &i2c_cdc  {
@@ -246,7 +348,7 @@
 
 		qcom,cdc-micbias-ldoh-v = <0x3>;
 		qcom,cdc-micbias-cfilt-sel = <0x0>;
-		qcom,cdc-micbias-cfilt-mv = <2700>;
+		qcom,cdc-micbias-cfilt-mv = <2700>; //Kevin Shiu 20140107 increase mic voltage to 2.7v
 		qcom,cdc-mclk-clk-rate = <12288000>;
 
 		qcom,cdc-static-supplies = "cdc-vdda-h",
@@ -280,10 +382,12 @@
 			status = "okay";
 			qcom,led_mpp_2 {
 				label = "mpp";
-				linux,name = "button-backlight";
-				linux-default-trigger = "hr-trigger";
+				/*Arima Edison modify notification led 20130709 ++*/
+				linux,name = "green";				
+				/*linux-default-trigger = "hr-trigger";*/
+				/*Arima Edison modify notification led 20130709 --*/
 				qcom,default-state = "off";
-				qcom,max-current = <40>;
+				qcom,max-current = <5>; /*20131118 tracy change from 40 to 5 for turn low the green led current to 5mA */
 				qcom,id = <6>;
 				qcom,source-sel = <1>;
 				qcom,mode-ctrl = <0x60>;
@@ -295,9 +399,11 @@
 			status = "okay";
 			qcom,led_mpp_3 {
 				label = "mpp";
-				linux,name = "wled-backlight";
-				linux,default-trigger = "bkl-trigger";
-				qcom,default-state = "on";
+				/*Arima Edison modify notification led 20130709 ++*/
+				linux,name = "red";				
+				/* linux,default-trigger = "bkl-trigger"; */				
+				qcom,default-state = "off";
+				/*Arima Edison modify notification led 20130709 --*/
 				qcom,max-current = <40>;
 				qcom,id = <6>;
 				qcom,source-sel = <8>;
@@ -316,13 +422,15 @@
 		qcom,vibrator@c000 {
 			status = "okay";
 			qcom,vib-timeout-ms = <15000>;
-			qcom,vib-vtg-level-mV = <3100>;
+			qcom,vib-vtg-level-mV = <3100>; //JimCheng 20140624 change vibrator voltage to 3.1V
 		};
 	};
 };
 
 &sdhc_1 {
 	vdd-supply = <&pm8110_l17>;
+	qcom,vdd-always-on; /* FerryWu, 2013/08/09, rollback to 1011 configuration to prevent eMMC initialization failure issue */
+	qcom,vdd-lpm-sup; /* FerryWu, 2013/08/09, rollback to 1011 configuration to prevent eMMC initialization failure issue */
 	qcom,vdd-voltage-level = <2900000 2900000>;
 	qcom,vdd-current-level = <200 400000>;
 
@@ -375,7 +483,10 @@
 
 &pm8110_chg {
 	status = "ok";
+	
+	/* Charging enable, Abner Yen
 	qcom,charging-disabled;
+	*/
 
 	qcom,chgr@1000 {
 		status = "ok";

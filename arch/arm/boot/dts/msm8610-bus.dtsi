@@ -56,7 +56,7 @@
 			qcom,ws = <10000>;
 			qcom,qport = <2>;
 			qcom,mas-hw-id = <11>;
-			qcom,prio1 = <3>;
+			qcom,prio1 = <3>;  /* 20130917 tracy change from 2 to 3 for blue screen by Qualcomm */
 			qcom,prio0 = <3>;
 		};
 
@@ -71,7 +71,7 @@
 			qcom,ws = <10000>;
 			qcom,qport = <7>;
 			qcom,mas-hw-id = <11>;
-			qcom,prio1 = <1>;
+			qcom,prio1 = <1>; /* 20130917 tracy change from 2 to 1 for blue screen by Qualcomm */
 			qcom,prio0 = <1>;
 		};
 
@@ -913,7 +913,7 @@
 		qcom,fabclk-dual = "mem_clk";
 		qcom,fabclk-active = "mem_a_clk";
 		qcom,ntieredslaves = <0>;
-		qcom,qos-freq = <19200>;
+		qcom,qos-freq = <19200>;/* 20130917 tracy change from 4800 to 19200 for blue screen by Qualcomm */
 		qcom,hw-sel = "BIMC";
 		qcom,rpm-en;
 
@@ -930,19 +930,19 @@
 			qcom,masterp = <0>;
 			qcom,tier = <2>;
 			qcom,hw-sel = "BIMC";
-			qcom,mode = "Limiter";
+			qcom,mode = "Limiter";/* 20130917 tracy change from fixed to limiter for blue screen by Qualcomm */
 			qcom,qport = <0>;
 			qcom,ws = <10000>;
 			qcom,mas-hw-id = <0>;
 			qcom,prio-rd = <0>;
 			qcom,prio-wr = <0>;
 			qcom,prio-lvl = <0>;
-			qcom,mode-thresh = "Fixed";
+			qcom,mode-thresh = "Fixed";/* 20130917 tracy add for blus screen by Qualcomm++  */
 			qcom,thresh = <800000>;
 			qcom,dual-conf;
 			qcom,bimc,bw = <300000>;
 			qcom,bimc,gp = <5000>;
-			qcom,bimc,thmp = <50>;
+			qcom,bimc,thmp = <50>;/* 20130917 tracy add for blus screen by Qualcomm --*/
 		};
 
 		mas-mss-proc {

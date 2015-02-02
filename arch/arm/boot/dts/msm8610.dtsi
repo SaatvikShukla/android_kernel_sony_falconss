@@ -287,6 +287,8 @@
 		interrupt-names = "core_irq", "bam_irq";
 
 		vdd-supply = <&pm8110_l17>;
+		qcom,vdd-always-on; /* FerryWu, 2013/08/09, rollback to 1011 configuration to prevent eMMC initialization failure issue */
+		qcom,vdd-lpm-sup; /* FerryWu, 2013/08/09, rollback to 1011 configuration to prevent eMMC initialization failure issue */
 		qcom,vdd-voltage-level = <2900000 2900000>;
 		qcom,vdd-current-level = <9000 400000>;
 
@@ -455,8 +457,40 @@
 
 	qcom,msm-mem-hole {
 		compatible = "qcom,msm-mem-hole";
-		qcom,memblock-remove = <0x08800000 0x5600000>; /* Address and Size of Hole */
+		// << FerryWu, 2013/08/15, preserve a fixed memory region to store data for ram dumper
+		// add memory hole 0x08700000 ~ 0x087FFFFF
+		// 20131121-Jordanchen , Remove black area of 16MB behind modem for AP
+		//qcom,memblock-remove = <0x08700000 0x100000 0x08800000 0x5600000>; /* Address and Size of Hole */
+		qcom,memblock-remove = <0x08700000 0x100000 0x08800000 0x2d00000 0x0c500000 0x1900000>; /* Address and Size of Hole */
+ 		// >> FerryWu, 2013/08/15, preserve a fixed memory region to store data for ram dumper
 	};
+
+	// << FerryWu, 2013/08/15, preserve a fixed memory region to store data for ram dumper
+	ram_console {
+		compatible = "qcom,ram-console";
+		qcom,memory-fixed = <0x08700000 0x40000>;
+	};
+
+	last_radio_log {
+		compatible = "qcom,last-radio-log";
+		qcom,memory-fixed = <0x08740000 0x40000>;
+	};
+
+	ramdumpinfo {
+		compatible = "qcom,ramdumpinfo";
+		qcom,memory-fixed = <0x08780000 0x200>;
+	};
+
+	productinfo {
+		compatible = "qcom,productinfo";
+		qcom,memory-fixed = <0x08780200 0x200>;
+	};
+
+	restart_parameters {
+		compatible = "qcom,restart-parameters";
+		qcom,memory-fixed = <0x087C0000 0x40000>;
+	};
+	// >> FerryWu, 2013/08/15, preserve a fixed memory region to store data for ram dumper
 
 	qcom,wdt@f9017000 {
 		compatible = "qcom,msm-watchdog";
@@ -525,7 +559,9 @@
 		reg = <0xf9923000 0x1000>;
 		interrupt-names = "qup_err_intr";
 		interrupts = <0 95 0>;
-		qcom,i2c-bus-freq = <100000>;
+		/*Arima Edison modify i2c freq from 100000 to 400000++*/
+		qcom,i2c-bus-freq = <400000>;
+		/*Arima Edison modify i2c freq from 100000 to 400000--*/
 		qcom,i2c-src-freq = <19200000>;
 		qcom,sda-gpio = <&msmgpio 2 0>;
 		qcom,scl-gpio = <&msmgpio 3 0>;
@@ -555,7 +591,7 @@
 		reg = <0xf9928000 0x1000>;
 		interrupt-names = "qup_err_intr";
 		interrupts = <0 100 0>;
-		qcom,i2c-bus-freq = <100000>;
+		qcom,i2c-bus-freq = <400000>;
 		qcom,i2c-src-freq = <19200000>;
 		qcom,sda-gpio = <&msmgpio 16 0>;
 		qcom,scl-gpio = <&msmgpio 17 0>;
@@ -588,10 +624,12 @@
 		reg = <0xf9925000 0x1000>;
 		interrupt-names = "qup_err_intr";
 		interrupts = <0 97 0>;
-		qcom,i2c-bus-freq = <100000>;
+		/*++ Huize - 20140213 Add for QUP3 and modify freq to 400 MHZ ++*/
+		qcom,i2c-bus-freq = <400000>;
                 qcom,i2c-src-freq = <19200000>;
                 qcom,sda-gpio = <&msmgpio 10 0>;
                 qcom,scl-gpio = <&msmgpio 11 0>;
+		/*-- Huize - 20140213 Add for QUP3 and modify freq to 400 MHZ --*/
 		qcom,clk-ctl-xfer;
                 qcom,master-id = <86>;
 	};
@@ -613,7 +651,9 @@
 		qcom,gpio-cs0  = <&msmgpio 88 0>;
 
 		qcom,infinite-mode = <0>;
-		qcom,use-bam;
+		/*Arima Edison block it, since we do not need it++*/
+		/*qcom,use-bam;*/
+		/*Arima Edison block it, since we do not need it--*/
 		qcom,ver-reg-exists;
 		qcom,bam-consumer-pipe-index = <18>;
 		qcom,bam-producer-pipe-index = <19>;
