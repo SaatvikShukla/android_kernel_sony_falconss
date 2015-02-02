@@ -926,11 +926,7 @@ void __init msm8610_init_gpiomux(void)
 
 	msm_gpiomux_install(msm_led_configs, ARRAY_SIZE(msm_led_configs));  //tracy add for led
 	msm_gpiomux_install(msm_dp_configs, ARRAY_SIZE(msm_dp_configs));  /*20130815 tracy for TCL/Truly DP/PDP LCM detection*/
-	//[Arima Edison] add for enable isdbt ++
-	msm_gpiomux_install(msm_dtv_configs, ARRAY_SIZE(msm_dtv_configs));
-	//[Arima Edison] add for enable isdbt --
 
-//- murphy 2013.12.31  QCT_KK merged
 }
 
 static void wcnss_switch_to_gpio(void)
