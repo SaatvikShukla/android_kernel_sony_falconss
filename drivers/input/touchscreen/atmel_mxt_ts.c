@@ -2165,8 +2165,7 @@ static int mxt_power_on(struct mxt_data *data, bool on)
 {
 	int rc;
 
-	if (on == false)
-		goto power_off;
+	if (on == false);
 
 	rc = reg_set_optimum_mode_check(data->vcc_ana, MXT_ACTIVE_LOAD_UA);
 	if (rc < 0) {
@@ -2235,7 +2234,6 @@ error_reg_en_vcc_ana:
 	reg_set_optimum_mode_check(data->vcc_ana, 0);
 	return rc;
 
-power_off:
 	reg_set_optimum_mode_check(data->vcc_ana, 0);
 	regulator_disable(data->vcc_ana);
 	if (data->pdata->digital_pwr_regulator) {

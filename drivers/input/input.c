@@ -1604,8 +1604,18 @@ static int input_dev_resume(struct device *dev)
 {
 	struct input_dev *input_dev = to_input_dev(dev);
 
+//SOMC KK PATCH Patches_w14.4_begin
+if (0) {
+	/* removed to avoid the injection of fake key release events */
 	input_reset_device(input_dev);
 
+} else {
+	mutex_lock(&input_dev->mutex);
+	if (input_dev->users)
+		input_dev_toggle(input_dev, true);
+	mutex_unlock(&input_dev->mutex);
+}
+//SOMC KK PATCH Patches_w14.4_end
 	return 0;
 }
 
