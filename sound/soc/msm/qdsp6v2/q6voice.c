@@ -29,8 +29,8 @@
 #include "q6voice.h"
 
 
-#define TIMEOUT_MS 300
-
+//#define TIMEOUT_MS 300
+#define TIMEOUT_MS 500 //Kevin Shiu QCOM patch, fix TX and RX no sound issue after establishing AMR-WB call
 
 #define CMD_STATUS_SUCCESS 0
 #define CMD_STATUS_FAIL 1

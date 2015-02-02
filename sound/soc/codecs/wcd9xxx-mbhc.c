@@ -84,13 +84,13 @@
 #define DEFAULT_DCE_WAIT 60000
 #define DEFAULT_STA_WAIT 5000
 
-#define VDDIO_MICBIAS_MV 1800
+#define VDDIO_MICBIAS_MV 2700 //1800 //Kevin Shiu 20140107 increase mic voltage to 2.7v
 
 #define WCD9XXX_MICBIAS_PULLDOWN_SETTLE_US 5000
 
 #define WCD9XXX_HPHL_STATUS_READY_WAIT_US 1000
 #define WCD9XXX_MUX_SWITCH_READY_WAIT_MS 50
-#define WCD9XXX_MEAS_DELTA_MAX_MV 120
+#define WCD9XXX_MEAS_DELTA_MAX_MV 75 //50 //Kevin Shiu 20140107 increase mic voltage to 2.7v
 #define WCD9XXX_MEAS_INVALD_RANGE_LOW_MV 20
 #define WCD9XXX_MEAS_INVALD_RANGE_HIGH_MV 80
 
@@ -110,7 +110,7 @@
 
 #define WCD9XXX_MBHC_NSC_CS 9
 #define WCD9XXX_GM_SWAP_THRES_MIN_MV 150
-#define WCD9XXX_GM_SWAP_THRES_MAX_MV 650
+#define WCD9XXX_GM_SWAP_THRES_MAX_MV 975 //650 //Kevin Shiu 20140107 increase mic voltage to 2.7v
 #define WCD9XXX_THRESHOLD_MIC_THRESHOLD 200
 
 #define WCD9XXX_USLEEP_RANGE_MARGIN_US 100
@@ -1171,6 +1171,7 @@ static short wcd9xxx_mbhc_setup_hs_polling(struct wcd9xxx_mbhc *mbhc,
 	if (mbhc->mbhc_cfg->do_recalibration) {
 		/* recalibrate dce_z and sta_z */
 		reg = snd_soc_read(codec, WCD9XXX_A_CDC_MBHC_B1_CTL);
+if(0){ //Kevin Shiu temp fix
 		change = snd_soc_update_bits(codec, WCD9XXX_A_CDC_MBHC_B1_CTL,
 					     0x78, btn_det->mbhc_nsc << 3);
 		wcd9xxx_get_z(mbhc, &dce_z, &sta_z);
@@ -1189,7 +1190,7 @@ static short wcd9xxx_mbhc_setup_hs_polling(struct wcd9xxx_mbhc *mbhc,
 			pr_warn("%s: failed get new dce_z/sta_z 0x%x/0x%x\n",
 				__func__, dce_z, sta_z);
 		}
-
+}//Kevin Shiu end
 		if (is_cs_enable) {
 			/* recalibrate dce_nsc_cs_z */
 			reg = snd_soc_read(mbhc->codec,
@@ -1517,7 +1518,7 @@ wcd9xxx_find_plug_type(struct wcd9xxx_mbhc *mbhc,
 		else if (d->_vdces < no_mic)
 			d->_type = PLUG_TYPE_HEADPHONE;
 		else
-			d->_type = PLUG_TYPE_HIGH_HPH;
+			d->_type = PLUG_TYPE_GND_MIC_SWAP; //Kevin Shiu in this case, it recognize as unsupported headset //PLUG_TYPE_HIGH_HPH;
 
 		ch += d->hphl_status & 0x01;
 		if (!d->swap_gnd && !d->hwvalue && !d->vddio) {
@@ -1527,7 +1528,7 @@ wcd9xxx_find_plug_type(struct wcd9xxx_mbhc *mbhc,
 				minv = d->_vdces;
 		}
 
-		pr_debug("%s: DCE #%d, %04x, V %04d(%04d), GND %d, VDDIO %d, HPHL %d TYPE %d\n",
+		pr_info("%s: DCE #%d, %04x, V %04d(%04d), GND %d, VDDIO %d, HPHL %d TYPE %d\n",
 			 __func__, i, d->dce, vdce, d->_vdces,
 			 d->swap_gnd, d->vddio, d->hphl_status & 0x01,
 			 d->_type);
@@ -1595,9 +1596,9 @@ wcd9xxx_find_plug_type(struct wcd9xxx_mbhc *mbhc,
 		if (((type == PLUG_TYPE_HEADSET ||
 		      type == PLUG_TYPE_HEADPHONE) && ch != size) ||
 		    (type == PLUG_TYPE_GND_MIC_SWAP && ch)) {
-			pr_debug("%s: Invalid, not fully inserted, TYPE %d\n",
+			pr_info("%s: Invalid, not fully inserted, TYPE %d\n",
 				 __func__, type);
-			type = PLUG_TYPE_INVALID;
+			type = PLUG_TYPE_GND_MIC_SWAP;//Kevin Shiu in this case, it recognize as unsupported headset //PLUG_TYPE_INVALID;
 		}
 	}
 
@@ -1618,7 +1619,7 @@ wcd9xxx_find_plug_type(struct wcd9xxx_mbhc *mbhc,
 		}
 	}
 exit:
-	pr_debug("%s: Plug type %d detected, micbias_enable %d\n", __func__,
+	pr_info("%s: Plug type %d detected, micbias_enable %d\n", __func__,
 		 type, mbhc->micbias_enable);
 	return type;
 }
@@ -3027,7 +3028,7 @@ static int wcd9xxx_is_false_press(struct wcd9xxx_mbhc *mbhc)
 			mb_v = wcd9xxx_codec_sta_dce(mbhc, 0, true);
 			pr_debug("%s: STA[0]: %d,%d\n", __func__, mb_v,
 				 wcd9xxx_codec_sta_dce_v(mbhc, 0, mb_v));
-			if (mb_v < v_b1_hu || mb_v > v_ins_hu) {
+			if (mb_v < (v_b1_hu - 1000) || mb_v > v_ins_hu) { //Kevin Shiu reduce probabilty of occurrence of fake press 
 				r = 1;
 				break;
 			}
@@ -3767,10 +3768,16 @@ static void wcd9xxx_mbhc_setup(struct wcd9xxx_mbhc *mbhc)
 	if (mbhc->mbhc_cb &&
 			mbhc->mbhc_cb->get_cdc_type() !=
 					WCD9XXX_CDC_TYPE_HELICON) {
-		if (mbhc->resmgr->reg_addr->micb_4_mbhc)
-			snd_soc_update_bits(codec,
-					mbhc->resmgr->reg_addr->micb_4_mbhc,
-					0x03, MBHC_MICBIAS2);
+			/* Kevin Shiu 20130815 Temporary Fix */
+			if(mbhc->resmgr != NULL){
+  				if(mbhc->resmgr->reg_addr != NULL){
+					if (mbhc->resmgr->reg_addr->micb_4_mbhc)
+						snd_soc_update_bits(codec,
+						mbhc->resmgr->reg_addr->micb_4_mbhc,
+						0x03, MBHC_MICBIAS2);
+  				}
+			}
+			/* Kevin Shiu end */
 	}
 
 	snd_soc_update_bits(codec, WCD9XXX_A_CDC_MBHC_B1_CTL, 0x02, 0x02);
